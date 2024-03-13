@@ -33,18 +33,34 @@ def get_cjk_score(str):
     return ideograph_score + kana_score + hangul_score + bias_score
 
 def decide_name(name, asciiName, alternateNames, merged_dict):
+    if name == 'Seoul':
+        return '漢陽'
+
     cands = []
-    cands.append(name)
     if name in merged_dict:
         cands.extend(merged_dict[name])
     if asciiName in merged_dict:
         cands.extend(merged_dict[asciiName])
     for n in alternateNames.split(','):
+        if n != '':
+            cands.append(n)
+
+    if len(cands) > 0:
+        cands = list(set(cands))
+        cands = sorted(cands, key=lambda s: get_cjk_score(s), reverse=True)
+        return cands[0]
+
+    # Indirect reference to wikidata dictionary
+    cands = []
+    for n in alternateNames.split(','):
         if n in merged_dict:
             cands.extend(merged_dict[n])
     cands = list(set(cands))
     cands = sorted(cands, key=lambda s: get_cjk_score(s), reverse=True)
-    return cands[0]
+    if len(cands) > 0:
+        return cands[0]
+
+    return name
 
 def gen_result(in_file, dict_file, out_file):
     with open(in_file, 'r') as in_f, open(dict_file, 'r') as dict_f, open(out_file, 'w') as out_f:
