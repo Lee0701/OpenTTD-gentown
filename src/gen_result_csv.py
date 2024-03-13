@@ -98,7 +98,7 @@ def gen_result(in_file, dict_file, out_file):
         result = sorted(result, key=lambda e: e[1], reverse=True)
 
         for [name, population, city, latitude, longitude] in result:
-            out_f.write(f'{name}\t{population}\t{city}\t{latitude}\t{longitude}\n')
+            out_f.write(f'{name},{population},{city},{latitude},{longitude}\n')
             lines += 1
             if lines % 10000 == 0:
                 print(f'Wrote {lines} lines')
