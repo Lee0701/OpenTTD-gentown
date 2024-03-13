@@ -70,12 +70,15 @@ def gen_result(in_file, dict_file, out_file):
         result = []
         for line in in_f:
             line = line.strip()
-            [_, name, asciiName, alternateNames, latitude, longitude, _, _, _, _, _, _, _, _, population] = line.split('\t')[:15]
+            [_, name, asciiName, alternateNames, latitude, longitude, _, feature_code, _, _, _, _, _, _, population] = line.split('\t')[:15]
+            if not feature_code.startswith('PPL'):
+                continue
             latitude = float(latitude)
             longitude = float(longitude)
             if latitude > NORTH or latitude < SOUTH or longitude < WEST or longitude > EAST:
                 continue
             population = int(population)
+            population = cvt_population(population)
             size = 'S'
             city = '0'
             if population >= THRES_M:
@@ -85,11 +88,8 @@ def gen_result(in_file, dict_file, out_file):
             if population >= THRES_CITY:
                 city = '1'
             name = decide_name(name, asciiName, alternateNames, merged_dict)
-            population = cvt_population(population)
-            if population == 0:
-                continue
             result.append([name, population, city, latitude, longitude])
-        
+
         # Remove duplicates
         names = list(set([e[0] for e in result]))
         result = sorted(result, key=lambda e: e[1])
